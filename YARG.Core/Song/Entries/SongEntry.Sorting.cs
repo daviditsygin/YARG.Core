@@ -186,10 +186,12 @@ namespace YARG.Core.Song
             }
         }
 
-        private static readonly unsafe delegate*<SongCache, Dictionary<SongEntry, CacheWriteIndices>, List<string>>[] COLLECTORS =
+        // Managed delegates rather than function pointers: IL2CPP (iOS) crashes on
+        // fields holding arrays of unmanaged function pointers.
+        private static readonly Func<SongCache, Dictionary<SongEntry, CacheWriteIndices>, List<string>>[] COLLECTORS =
         {
-            &CollectCacheTitles, &CollectCacheArtists,  &CollectCacheAlbums,    &CollectCacheGenres, &CollectCacheSubgenres,
-            &CollectCacheYears,  &CollectCacheCharters, &CollectCachePlaylists, &CollectCacheSources,
+            CollectCacheTitles, CollectCacheArtists,  CollectCacheAlbums,    CollectCacheGenres, CollectCacheSubgenres,
+            CollectCacheYears,  CollectCacheCharters, CollectCachePlaylists, CollectCacheSources,
         };
 
         internal static void WriteCategoriesToCache(FileStream filestream, SongCache cache, Dictionary<SongEntry, CacheWriteIndices> nodes)
