@@ -109,10 +109,17 @@ namespace YARG.Core.IO
             _Dispose(false);
         }
 
-        [DllImport("STB2CSharp", EntryPoint = "load_image_from_memory")]
+#if UNITY_IOS && !UNITY_EDITOR
+        // iOS plugins are static libraries; symbols live in the main binary.
+        private const string NativeLibrary = "__Internal";
+#else
+        private const string NativeLibrary = "STB2CSharp";
+#endif
+
+        [DllImport(NativeLibrary, EntryPoint = "load_image_from_memory")]
         private static extern unsafe byte* LoadNative(byte* data, int length, out int width, out int height, out int components);
 
-        [DllImport("STB2CSharp", EntryPoint = "free_image")]
+        [DllImport(NativeLibrary, EntryPoint = "free_image")]
         private static extern unsafe void FreeNative(byte* image);
     }
 }
